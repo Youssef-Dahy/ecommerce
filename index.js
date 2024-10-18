@@ -32,18 +32,14 @@ app.post(
       "whsec_0meXz6kcCe0ldeNvs8VkHpIlP4Xc9SoY"
     );
     let checkout;
-    let user = await userModel.findOne({ email: checkout.customer_email });
 
     if (event.type == "checkout.session.completed") {
       checkout = event.data.object;
+      let user = await userModel.findOne({ email: checkout.customer_email });
 
       let cart = await cartModel.findById({
         _id: checkout.client_reference_id,
       });
-
-      let totalOrderPrice = cart.totalPriceAfterDiscount
-        ? cart.totalPriceAfterDiscount
-        : cart.totalPrice;
 
       let order = new orderModel({
         user: user._id,
@@ -54,6 +50,7 @@ app.post(
         isPaid: true,
       });
 
+      await order.save();
       //bulk Write
       if (order) {
         let options = cart.cartItems.map((item) => ({
@@ -64,12 +61,11 @@ app.post(
         }));
 
         await productModel.bulkWrite(options);
-        await order.save();
       } else {
         return next(new AppError("Order not created", 400));
       }
 
-      await cartModel.findByIdAndDelete(req.params.id);
+      await cartModel.findByIdAndDelete({ _id: checkout.client_reference_id });
       res.json({ message: "Done", order });
     }
     res.status(200).json({ message: "success", checkout });
