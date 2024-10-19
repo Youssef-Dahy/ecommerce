@@ -29,7 +29,7 @@ app.post(
     let event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      "whsec_0meXz6kcCe0ldeNvs8VkHpIlP4Xc9SoY"
+      "whsec_PXAA5RlECg91Rz9DrhD28Nqi4SpJPlUc"
     );
     let checkout;
 
