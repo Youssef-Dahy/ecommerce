@@ -67,7 +67,7 @@ app.post(
 
     //   await cartModel.findByIdAndDelete({ _id: checkout.client_reference_id });
     // }
-    res.status(200).json({ message: "success", checkout });
+    res.status(200).json({ message: "success" });
   })
 );
 
