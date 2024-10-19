@@ -46,7 +46,7 @@ app.post(
         cartItems: cart.cartItems,
         totalPrice: checkout.amount_total / 100,
         shippingAddress: checkout.metadata,
-        paymentMethod: "online",
+        paymentMethod: "credit",
         isPaid: true,
       });
 
@@ -66,7 +66,6 @@ app.post(
       }
 
       await cartModel.findByIdAndDelete({ _id: checkout.client_reference_id });
-      res.json({ message: "Done", order });
     }
     res.status(200).json({ message: "success", checkout });
   })
