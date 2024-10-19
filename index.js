@@ -31,42 +31,42 @@ app.post(
       signature,
       "whsec_0meXz6kcCe0ldeNvs8VkHpIlP4Xc9SoY"
     );
-    let checkout;
+    // let checkout;
 
-    if (event.type == "checkout.session.completed") {
-      checkout = event.data.object;
-      let user = await userModel.findOne({ email: checkout.customer_email });
+    // if (event.type == "checkout.session.completed") {
+    //   checkout = event.data.object;
+    //   let user = await userModel.findOne({ email: checkout.customer_email });
 
-      let cart = await cartModel.findById({
-        _id: checkout.client_reference_id,
-      });
+    //   let cart = await cartModel.findById({
+    //     _id: checkout.client_reference_id,
+    //   });
 
-      let order = new orderModel({
-        user: user._id,
-        cartItems: cart.cartItems,
-        totalPrice: checkout.amount_total / 100,
-        shippingAddress: checkout.metadata,
-        paymentMethod: "credit",
-        isPaid: true,
-      });
+    //   let order = new orderModel({
+    //     user: user._id,
+    //     cartItems: cart.cartItems,
+    //     totalPrice: checkout.amount_total / 100,
+    //     shippingAddress: checkout.metadata,
+    //     paymentMethod: "credit",
+    //     isPaid: true,
+    //   });
 
-      await order.save();
-      //bulk Write
-      if (order) {
-        let options = cart.cartItems.map((item) => ({
-          updateOne: {
-            filter: { _id: item.product },
-            update: { $inc: { quantity: -item.quantity, sold: item.quantity } },
-          },
-        }));
+    //   await order.save();
+    //   //bulk Write
+    //   if (order) {
+    //     let options = cart.cartItems.map((item) => ({
+    //       updateOne: {
+    //         filter: { _id: item.product },
+    //         update: { $inc: { quantity: -item.quantity, sold: item.quantity } },
+    //       },
+    //     }));
 
-        await productModel.bulkWrite(options);
-      } else {
-        return next(new AppError("Order not created", 400));
-      }
+    //     await productModel.bulkWrite(options);
+    //   } else {
+    //     return next(new AppError("Order not created", 400));
+    //   }
 
-      await cartModel.findByIdAndDelete({ _id: checkout.client_reference_id });
-    }
+    //   await cartModel.findByIdAndDelete({ _id: checkout.client_reference_id });
+    // }
     res.status(200).json({ message: "success", checkout });
   })
 );
